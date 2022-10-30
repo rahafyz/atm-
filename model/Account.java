@@ -2,6 +2,8 @@ package model;
 
 
 import Exeptions.InvalidAmountException;
+import model.enums.AccountType;
+import model.enums.TransactionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class Account {
         Random random = new Random();
         this.id = random.nextInt(100);
         this.user = user;
-        this.accountNumber = accountNumber;
+        this.accountNumber = String.valueOf(random.nextLong(10000000,999999999));
         this.password = password;
         this.balance = 50d;
         this.type = type;

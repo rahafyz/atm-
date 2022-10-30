@@ -1,8 +1,8 @@
-package Application;
+package service;
 
 import Exeptions.AgeException;
 import Exeptions.InvalidInputException;
-import database.OldDatabase;
+import database.Database;
 import model.Account;
 import model.User;
 import util.MyMethod;
@@ -12,19 +12,20 @@ import java.util.Optional;
 
 public class UserService {
 
-    private OldDatabase database = OldDatabase.getInstance();
+    private Database database = Database.getInstance();
 
     public User createUser(String fName, String lName, String nationalCode, LocalDate bDay) {
-        if (this.findAccountByNationalCode(nationalCode).isPresent())
-            throw new InvalidInputException("User already exist.");
+        final User[] user = {null};
 
-        //age validation
+        if (findAccountByNationalCode(nationalCode).isPresent()){
+            throw new InvalidInputException("User already exist.");
+        }
+
         if (bDay.getYear() < 18)
             throw new AgeException();
-
-        User user = new User(fName, lName, nationalCode, bDay);
-        MyMethod.print(user);
-        return user;
+        user[0] = new User(fName, lName, nationalCode, bDay);
+        MyMethod.print(user[0]);
+        return user[0];
     }
 
     public Optional<User> findAccountByNationalCode(String nationalCode) {

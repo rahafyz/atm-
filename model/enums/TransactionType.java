@@ -1,4 +1,4 @@
-package model;
+package model.enums;
 
 public enum TransactionType {
     DEPOSIT(1),WITHDRAW(2);

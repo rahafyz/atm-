@@ -7,22 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class OldDatabase {
+public class Database {
 
-    private static OldDatabase instance;
+    private static Database instance;
 
 
     private List<Account> accounts;
 
-    private OldDatabase() {
+    private Database() {
         accounts = new ArrayList<>();
 //        accounts.add(new Account(new User("Raha","Fayyaz","00227738" , DateFunctions.stringToDate("15-03-1998"))
 //        ,"12345","54321"));
     }
 
-    public static OldDatabase getInstance(){
+    public static Database getInstance(){
         if (Objects.isNull(instance))
-            return new OldDatabase();
+            return new Database();
         return instance;
     }
 

@@ -13,7 +13,7 @@ public class Card {
 
     public Card(String password) {
         Random random = new Random();
-        int num = random.nextInt(100000000);
+        int num = random.nextInt(10000000,99999999);
         this.cardNumber = "50730819"+num;
         this.cvv2 = String.valueOf(random.nextInt(4));
         this.expiredDate = LocalDate.now().plusYears(3);

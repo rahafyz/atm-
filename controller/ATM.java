@@ -1,9 +1,10 @@
 package controller;
 
-import Application.AccountService;
-import Application.UserService;
+import service.AccountService;
+import service.UserService;
 import Exeptions.AgeException;
-import database.OldDatabase;
+import Exeptions.NotFoundException;
+import database.Database;
 import model.Account;
 import model.User;
 import util.MyMethod;
@@ -26,7 +27,7 @@ public class ATM {
 
     private UserService userService = new UserService();
     private AccountService accountService = new AccountService();
-    private OldDatabase database = OldDatabase.getInstance();
+    private Database database = Database.getInstance();
 
 
     Account currentAccount;
@@ -35,7 +36,8 @@ public class ATM {
 
 
     public void run() {
-        firstMenu();
+        if (!isAuthenticated || isUserExited)
+            firstMenu();
         while (!isUserExited && isAuthenticated) {
             try {
                 Integer item = (Integer) MyMethod.getInput("""
@@ -66,7 +68,7 @@ public class ATM {
             }
             case REGISTER -> {
                 register();
-                firstMenu();
+                run();
             }
             default -> {
                 MyMethod.print("You did not enter a valid selection. Try again.");
@@ -92,11 +94,9 @@ public class ATM {
                         currentAccount.getBalance() +
                         "$");
             }
-            case TRANSACTIONS ->
-                    //add try catch vaaaa for each sout
-                    accountService.LastTenTransactions(currentAccount.getCard().getCardNumber());
+            case TRANSACTIONS -> MyMethod.print(accountService.lastTenTransactions(currentAccount.getCard().getCardNumber()));
 
-//            case TRANSFER -> accountService.moneyTransfer();
+            case TRANSFER -> transfer();
             case EXIT -> isUserExited = true;
         }
     }
@@ -112,6 +112,7 @@ public class ATM {
             currentAccount.withDraw(amount);
         } catch (Exception e) {
             System.err.println(e.getMessage());
+            run();
         }
     }
 
@@ -121,7 +122,7 @@ public class ATM {
             String lName = (String) MyMethod.getInput("Enter your family :", String.class);
             String nId = (String) MyMethod.getInput("Enter your national ID :", String.class);
 
-            System.out.print("Enter your date of birth (yyyy-mm-dd): ");
+            MyMethod.print("Enter your date of birth (yyyy-mm-dd): ");
             String date = (String) MyMethod.getInput("", String.class);
             LocalDate bDay = LocalDate.parse(date);
             User user = userService.createUser(fName, lName, nId, bDay);
@@ -134,7 +135,7 @@ public class ATM {
                     """, Integer.class);
 
             Account account = accountService.createAccount(user, password, type);
-            System.out.println("your can login with your card number: " + account.getCard().getCardNumber());
+            MyMethod.print("your can login with your card number: " + account.getCard().getCardNumber());
         } catch (AgeException e) {
             System.err.println(e.getMessage());
             System.exit(0);
@@ -152,6 +153,17 @@ public class ATM {
             isAuthenticated = true;
         } catch (Exception e) {
             System.err.println(e.getMessage());
+        }
+    }
+
+    private void transfer() {
+        try {
+            String toCard = (String) MyMethod.getInput("please Enter card Number:", String.class);
+            Double amount = (Double) MyMethod.getInput("Please Enter amount:", Double.class);
+            accountService.moneyTransfer(currentAccount.getCard().getCardNumber(), toCard, amount);
+        } catch (NotFoundException ex) {
+            ex.printStackTrace();
+            run();
         }
     }
 
